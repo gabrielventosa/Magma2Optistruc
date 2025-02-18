@@ -28,9 +28,9 @@ import pandas as pd
 file_names = [
     "StressE_TensorX_Ambient_MPa.fem",  # σXX
     "StressE_TensorY_Ambient_MPa.fem",  # σYY
-    "StressE_TensorY_Ambient_MPa.fem",  # σZZ
+    "StressE_TensorZ_Ambient_MPa.fem",  # σZZ
     "StressE_TensorXY_c8_Ambient_MPa.fem",  # τXY
-    "StressE_TensorXZ_c8_Ambient_MPa.fem",  # τYZ
+    "StressE_TensorYZ_c8_Ambient_MPa.fem",  # τYZ
     "StressE_TensorXZ_c8_Ambient_MPa.fem"   # τZX
 ]
 
@@ -48,11 +48,10 @@ for df in data_frames:
 # Smarter field formatting function
 def format_field(value):
     """
-    Formats the value based on its type and properties:
+    Formats the value based on its type:
     - Non-numeric: Left-align in an 8-character field.
     - Integer: Right-align in an 8-character field.
-    - Positive float: 8.2E format.
-    - Negative float: 7.2E format with sign.
+    - Floats: Fixed point notation with 8 characters including the sing.
     """
     if isinstance(value, str):
         # Non-numeric values: Left-align
@@ -61,16 +60,11 @@ def format_field(value):
         # Integer values: Right-align
         return f"{value:>8}"
     elif isinstance(value, float):
-        if value < 0:
-            # Negative floats: 7.2E with sign
-            formatted = f"{value:8}"
-            #return formatted
-            return formatted[:8] if len(formatted) > 8 else formatted
-        else:
-            # Positive floats: 8.2E
-            formatted = f"{value:8}"
-            #return f"{value:8}"
-            return formatted[:8] if len(formatted) > 8 else formatted
+        # Floats: Fixed-point notation with exactly 8 characters
+        formatted = f"{value:.3f}" #3 decimal places for precission
+        if len(formatted) >8: #Truncate if necessary
+            return formatted[:8]
+        return f"{formatted:>8}" #Right-align within 8 characters
     else:
         # Fallback for unknown types
         raise ValueError(f"Unsupported type for value: {value}")
